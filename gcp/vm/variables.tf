@@ -1,7 +1,7 @@
 variable "project_id" {
   description = "Project ID"
   type        = string
-  default	  = 
+  default     = "default-project-442314"
 }
 
 variable "region" {
@@ -17,9 +17,9 @@ variable "zone" {
 }
 
 variable "instance_name" {
-  description = "OMF-API"
+  description = "omf-api"
   type        = string
-  default	  = "OMF-API"
+  default	  = "omf-api"
 }
 
 variable "machine_type" {
@@ -27,3 +27,4 @@ variable "machine_type" {
   type        = string
   default     = "e2-micro"
 }
+
