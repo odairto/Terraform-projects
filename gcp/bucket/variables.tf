@@ -13,5 +13,5 @@ variable "region" {
 variable "bucket_name" {
   description = "Bucket Name"
   type        = string
-  default     = "omfstaticsite"
+  default     = "omf-static-site"
 }
