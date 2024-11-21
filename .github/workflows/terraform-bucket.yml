@@ -1,0 +1,78 @@
+name: Terraform Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform-bucket:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v0.4.0
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Set Google Cloud Project ID
+        run: echo "GOOGLE_CLOUD_PROJECT=${{ secrets.GCP_PROJECT_ID }}" >> $GITHUB_ENV
+
+      - name: Set Google Cloud Region
+        run: echo "GOOGLE_CLOUD_REGION=${{ secrets.GCP_REGION }}" >> $GITHUB_ENV
+
+      - name: Terraform Init (Bucket)
+        working-directory: gcp/bucket
+        run: terraform init
+
+      - name: Terraform Apply (Bucket)
+        working-directory: gcp/bucket
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          GOOGLE_CLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+          GOOGLE_CLOUD_REGION: ${{ secrets.GCP_REGION }}
+        run: terraform apply -auto-approve -var "project_id=${{ secrets.GCP_PROJECT_ID }}" -var "region=${{ secrets.GCP_REGION }}" -var "bucket_name=${{ secrets.BUCKET_NAME }}"
+
+  terraform-vm:
+    runs-on: ubuntu-latest
+    needs: terraform-bucket
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v0.4.0
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Set Google Cloud Project ID
+        run: echo "GOOGLE_CLOUD_PROJECT=${{ secrets.GCP_PROJECT_ID }}" >> $GITHUB_ENV
+
+      - name: Set Google Cloud Region
+        run: echo "GOOGLE_CLOUD_REGION=${{ secrets.GCP_REGION }}" >> $GITHUB_ENV
+
+      - name: Terraform Init (VM)
+        working-directory: gcp/vm
+        run: terraform init
+
+      - name: Terraform Apply (VM)
+        working-directory: gcp/vm
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          GOOGLE_CLOUD_PROJECT: ${{ secrets.GCP_PROJECT_ID }}
+          GOOGLE_CLOUD_REGION: ${{ secrets.GCP_REGION }}
+        run: terraform apply -auto-approve -var "project_id=${{ secrets.GCP_PROJECT_ID }}" -var "region=${{ secrets.GCP_REGION }}"
