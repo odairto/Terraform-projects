@@ -13,5 +13,5 @@ variable "region" {
 variable "bucket_name" {
   description = "Bucket Name"
   type        = string
-  default     = "terraform-state-oda"
+  default     = "omg-static-site"
 }
