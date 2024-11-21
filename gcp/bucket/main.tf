@@ -5,7 +5,7 @@ provider "google" {
 
 
 resource "google_storage_bucket" "bucket" {
-  name     = "omf-static-site"
+  name     = "omf-static-site-2"
   location = var.region
   force_destroy = true
 
