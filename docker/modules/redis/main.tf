@@ -7,18 +7,21 @@ terraform {
   }
 }
 
-provider "docker" {}
-
-resource "docker_image" "nginx" {
-  name         = var.docker_image_name
+resource "docker_image" "redis" {
+  name         = "redis:latest"
   keep_locally = false
 }
 
-resource "docker_container" "nginx" {
-  image = docker_image.nginx.image_id
+resource "docker_container" "redis" {
+  image = docker_image.redis.image_id
   name  = var.container_name
+
   ports {
-    internal = var.internal_port
+    internal = 6379
     external = var.external_port
   }
+
+    networks_advanced { 
+    name = var.network
+    }
 }
